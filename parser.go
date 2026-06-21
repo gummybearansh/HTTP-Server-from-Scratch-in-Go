@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 	"strings"
 	"strconv"
@@ -27,7 +26,7 @@ func ParseRequest(reader *bufio.Reader, connection net.Conn) (*HTTPRequest, erro
 	// [METHOD] <space> [PATH] <space> [PROTOCL]
 	request_status_line, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("Invalid request")
+		return nil, errors.New("Invalid Request line")
 	}
 	request_status_line = strings.TrimSpace(request_status_line)
 	status_line_array := strings.Fields(request_status_line)
@@ -86,6 +85,7 @@ func ParseRequest(reader *bufio.Reader, connection net.Conn) (*HTTPRequest, erro
 			return nil, errors.New("error parsing body")
 		}
 	}
+	request.Body = string(body_buffer)
 
 	// successful parsed response - no errors
 	return &request, nil

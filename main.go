@@ -32,12 +32,14 @@ func main() {
 			// pass the TCP connection to bufio to create a reader on it
 			reader := bufio.NewReader(connection)
 			// Entire Parser in parser.go 
-			_, err := ParseRequest(reader, connection)
+			request, err := ParseRequest(reader, connection)
 			if err != nil {
-				SendResponse(connection, 400, "BAD REQUEST", "", err.Error())
+				// net.Conn is 2 way - can send and receive on the same connection
+				Handle400(request, connection)
 				return
 			}
 
+			RouteRequest(request, connection)
 			// close connection
 			connection.Close()
 		} (connection)
