@@ -32,26 +32,11 @@ func main() {
 			// pass the TCP connection to bufio to create a reader on it
 			reader := bufio.NewReader(connection)
 			// Entire Parser in parser.go 
-			ParseRequest(reader, connection)
-
-			// net.Conn is 2 way - can send back response from here 
-			// HTTP resposne format: (every line in the header sectiion terminates with carriage return + newline)
-			status_line := "HTTP/1.1 200 OK\r\n"
-			headers := "Content-type: text/html\r\n" 
-			empty_line := "\r\n" // 2x (one from previous header) exact sequence of carriage return & newline - physical barrier between metadata and body
-			body := "<h1>Hello world</h1>"
-
-			response := status_line + headers + empty_line + body
-			b := []byte(response)
-
-			// send response
-			write_count, err := connection.Write(b)
-			if err != nil { 
-				fmt.Println(err)
-				fmt.Print(write_count)
-				return;
+			_, err := ParseRequest(reader, connection)
+			if err != nil {
+				SendResponse(connection, 400, "BAD REQUEST", "", err.Error())
+				return
 			}
-			// fmt.Println(response[:write_count])
 
 			// close connection
 			connection.Close()
