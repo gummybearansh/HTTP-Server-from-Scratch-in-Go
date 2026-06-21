@@ -1,11 +1,11 @@
 package main
 
 import (
-	// "bytes"
 	"bufio"
 	"fmt"
 	"net"
-	"strings"
+	// "strconv"
+	// "strings"
 )
 
 func main() { 
@@ -31,43 +31,8 @@ func main() {
 		go func (connection net.Conn){
 			// pass the TCP connection to bufio to create a reader on it
 			reader := bufio.NewReader(connection)
-			// need to parse the Request line [METHOD] [PATH] [PROTOCOL]
-			// read all the headers 
-			var request_headers []string
-			for { 
-				line, err := reader.ReadString('\n')
-				if err != nil { 
-					fmt.Println(err)
-					return;
-				}
-				// last line will be just this
-				if line == "\r\n" { 
-					break;
-				}
-				request_headers = append(request_headers, line)
-			}
-
-			if len(request_headers) == 0 {
-				fmt.Println("Invalid request")
-				return;
-			}
-
-			request_status_line := request_headers[0]
-			// status line format 
-			// [METHOD] <space> [PATH] <space> [PROTOCL]
-			// splits on whitespaces
-			status_line_array := strings.Fields(request_status_line)
-			if len(status_line_array) < 3 {
-				fmt.Print("Invalid request")
-				return;
-			}
-			method := status_line_array[0]
-			path := status_line_array[1]
-			protocol := status_line_array[2]
-
-			fmt.Println("method", method)
-			fmt.Println("path", path)
-			fmt.Println("protocol", protocol)
+			// Entire Parser in parser.go 
+			ParseRequest(reader, connection)
 
 			// net.Conn is 2 way - can send back response from here 
 			// HTTP resposne format: (every line in the header sectiion terminates with carriage return + newline)
