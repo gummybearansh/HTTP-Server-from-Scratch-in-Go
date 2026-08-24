@@ -28,7 +28,7 @@ func SendResponse(connection net.Conn, status_code int, status_text, headers str
 	status_line := fmt.Sprintf("HTTP/1.1 %d %s\r\n", status_code, status_text)
 	empty_line := "\r\n" // 2x (one from previous header) exact sequence of carriage return & newline - physical barrier between metadata and body
 	
-	response := status_line + headers + empty_line + body
+	response := status_line + headers + "\r\n"+ empty_line + body
 	// convert it to byte stream
 	b := []byte(response)
 
